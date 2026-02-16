@@ -1,0 +1,9 @@
+CREATE TABLE AggTransaction(
+State varchar(60) NOT NULL,
+Year int NOT NULL,
+Quarter int NOT NULL,
+Transaction_type varchar(60),
+Transaction_count int,
+Transaction_amount float,
+    CONSTRAINT aggtransaction_pkey PRIMARY KEY (state, year, quarter)
+)
