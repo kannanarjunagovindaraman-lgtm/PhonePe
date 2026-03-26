@@ -415,10 +415,11 @@ with tab4:
 
         #Tables and toggle switches with bar plots
         with col3:
-            st.markdown(":violet[**Top 10 States**]")
-            query_tp4=f"""SELECT "State", SUM("RegisteredCount") AS Registered_users 
+            st.markdown(":violet[**Least 10 States**]")
+            query_tp4=f"""SELECT "State" AS State, 
+                    SUM("RegisteredCount") AS RegisteredCount, SUM("AppOpens") as AppOpens
                 FROM public."aggMapUsers" WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' GROUP BY "State"
-				ORDER BY Registered_users DESC LIMIT 10;"""
+				ORDER BY RegisteredCount,AppOpens LIMIT 10;"""
             df_tp4=pd.read_sql(query_tp4,engine)
             df_tp4.index += 1
             st.dataframe(df_tp4)
@@ -426,23 +427,25 @@ with tab4:
             on_12 = st.toggle("Show plot",key='on_12')
 
         if on_12:
-            fig4 = px.bar(df_tp4 , x = 'State', y ='registered_users', color ='registered_users', 
-                color_continuous_scale = 'thermal', title = 'Top 10 states based on Registered Users', 
+            fig4 = px.bar(df_tp4 , x = 'state', y ='registeredcount', color ='appopens', 
+                color_continuous_scale = 'thermal', title = 'Least 10 states based on Registered Users', 
                 height = 600,)
             st.plotly_chart(fig4)
 
         with col4:
-            st.markdown(":violet[**Top 10 Districts**]")
-            query_tp5=f"""SELECT "District", "RegisteredCount" FROM  public."aggTopUsers"
-                WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' ORDER BY "RegisteredCount" DESC LIMIT 10;"""
+            st.markdown(":violet[**Least 10 Districts**]")
+            query_tp5=f"""SELECT "District" AS District, 
+                    SUM("RegisteredCount") AS RegisteredCount, SUM("AppOpens") as AppOpens
+                FROM public."aggMapUsers" WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' GROUP BY "District"
+ORDER BY RegisteredCount,AppOpens LIMIT 10;"""
             df_tp5=pd.read_sql(query_tp5,engine)
             df_tp5.index += 1
             st.dataframe(df_tp5)
 
             on_13 = st.toggle("Show plot",key='on_13')
         if on_13:
-            fig5 = px.bar(df_tp5 , x = 'District', y ='RegisteredCount', color ='RegisteredCount', 
-                color_continuous_scale = 'thermal', title = 'Top 10 District based on Registered Users', 
+            fig5 = px.bar(df_tp5 , x = 'district', y ='registeredcount', color ='appopens', 
+                color_continuous_scale = 'thermal', title = 'Least 10 District based on Registered Users', 
                 height = 600,)
             st.plotly_chart(fig5)
         
@@ -451,9 +454,11 @@ with tab4:
         
         #Tables and toggle switches with bar plots
         with col3:
-            st.markdown(":violet[**Top 10 Districts**]")
-            query_tp5=f"""SELECT "District", "RegisteredCount" FROM  public."aggTopUsers"
-                WHERE "Year"='{us_yr}' AND "District"!='' AND "Quarter" = '{us_qtr}' ORDER BY "RegisteredCount" DESC LIMIT 10;"""
+            st.markdown(":violet[**Least 10 Districts**]")
+            query_tp5=f"""SELECT "District" AS District, 
+                    SUM("RegisteredCount") AS RegisteredCount, SUM("AppOpens") as AppOpens
+                FROM public."aggMapUsers"
+                WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' GROUP BY District ORDER BY RegisteredCount LIMIT 10;"""
             
             df_tp5=pd.read_sql(query_tp5,engine)
             df_tp5.index += 1
@@ -462,15 +467,17 @@ with tab4:
             on_13 = st.toggle("Show plot",key='on_13')
 
         if on_13:
-            fig5 = px.bar(df_tp5 , x = 'District', y ='RegisteredCount', color ='RegisteredCount', 
-                color_continuous_scale = 'thermal', title = 'Top 10 districts', 
+            fig5 = px.bar(df_tp5 , x = 'district', y ='registeredcount', color ='appopens', 
+                color_continuous_scale = 'thermal', title = 'Least 10 districts', 
                 height = 600,)
             st.plotly_chart(fig5)
 
         with col4:
-            st.markdown(":violet[**Top 10 Pincode**]")
-            query_tp6=f"""SELECT "Pincode", "RegisteredCount" FROM  public."aggTopUsers"
-                WHERE "Year"='{us_yr}' AND "Pincode"!='' AND "Quarter" = '{us_qtr}' ORDER BY "RegisteredCount" DESC LIMIT 10;"""
+            st.markdown(":violet[**Top 10 District**]")
+            query_tp6=f"""SELECT "District" AS District, 
+                    SUM("RegisteredCount") AS RegisteredCount, SUM("AppOpens") as AppOpens
+                FROM public."aggMapUsers"
+                WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' GROUP BY District ORDER BY RegisteredCount DESC LIMIT 10;"""
             df_tp6=pd.read_sql(query_tp6,engine)
             df_tp6.index += 1
             st.dataframe(df_tp6)
@@ -478,8 +485,8 @@ with tab4:
             on_14 = st.toggle("Show plot",key='on_14')
 
         if on_14:
-            fig6 = px.bar(df_tp6 , x = 'Pincode', y ='RegisteredCount', color ='RegisteredCount', 
-                color_continuous_scale = 'thermal', title = 'Top 10 pincodes based on User registration', 
+            fig6 = px.bar(df_tp6 , x = 'district', y ='registeredcount', color ='appopens', 
+                color_continuous_scale = 'thermal', title = 'Top 10 District based on User registration', 
                 height = 600,)
             fig6.update_layout(xaxis_type='category')
             st.plotly_chart(fig6)
