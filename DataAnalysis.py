@@ -2,7 +2,7 @@
 
 #Pandas Library
 import pandas as pd
-
+import requests
 #MySQL and SQLAlchemy Libraries
 from urllib.parse import quote
 from sqlalchemy import create_engine
@@ -92,6 +92,33 @@ with tab1:
                 color_continuous_scale = 'thermal', title = 'Top 10 states based on Transaction Count', 
                 height = 600)
             st.plotly_chart(fig1)
+
+            query_all=f"""SELECT "State"  as State, 
+                            SUM("Transacion_count") AS Transaction_count
+                        FROM public.aggtransaction 
+                        WHERE "Year" = '{tr_yr}' 
+                        AND "Quarter" = '{tr_qtr}' 
+                        GROUP BY "State" 
+                        ORDER BY Transaction_count DESC;
+                        """
+            df_all=pd.read_sql(query_all,engine)
+            geojson_url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+            geojson_data = requests.get(geojson_url).json()
+
+            df_all['State'] = df_all['state'].str.strip().str.title()
+
+            fig = px.choropleth(
+            df_all,
+            geojson=geojson_data,
+            featureidkey='properties.ST_NM',
+            locations='State',
+            color='transaction_count',
+            color_continuous_scale='Reds'
+             )
+
+            fig.update_geos(fitbounds="locations", visible=False, scope="asia")
+
+            st.plotly_chart(fig, use_container_width=True)
 
         with col4:
             st.markdown(":violet[**Top 10 Districts**]")
@@ -214,6 +241,29 @@ with tab2:
                 height = 600,)
             st.plotly_chart(fig4)
 
+            query_all=f"""SELECT "State", SUM("RegisteredCount") AS Registered_users 
+                FROM public."aggMapUsers" WHERE "Year"='{u_yr}' AND "Quarter" = '{u_qtr}' GROUP BY "State"
+				ORDER BY Registered_users DESC ;
+                        """
+            df_all=pd.read_sql(query_all,engine)
+            geojson_url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+            geojson_data = requests.get(geojson_url).json()
+
+            df_all['State'] = df_all['State'].str.strip().str.title()
+
+            fig = px.choropleth(
+            df_all,
+            geojson=geojson_data,
+            featureidkey='properties.ST_NM',
+            locations='State',
+            color='registered_users',
+            color_continuous_scale='Reds'
+             )
+
+            fig.update_geos(fitbounds="locations", visible=False, scope="asia")
+
+            st.plotly_chart(fig, use_container_width=True)
+
         with col4:
             st.markdown(":violet[**Top 10 Districts**]")
             query_tp5=f"""SELECT "District", "RegisteredCount" FROM  public."aggTopUsers"
@@ -307,6 +357,33 @@ with tab3:
             st.dataframe(df_tp1)
 
             on_7 = st.toggle("Show plot",key='on_7')
+
+            query_all=f"""SELECT "State"  as State, 
+                            SUM("Count") AS Transaction_count
+                        FROM public."aggTopInsurance"  
+                        WHERE "Year" = '{Ir_yr}' 
+                        AND "Quarter" = '{Ir_qtr}' 
+                        GROUP BY "State" 
+                        ORDER BY Transaction_count DESC;
+                        """
+            df_all=pd.read_sql(query_all,engine)
+            geojson_url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+            geojson_data = requests.get(geojson_url).json()
+
+            df_all['State'] = df_all['state'].str.strip().str.title()
+
+            fig = px.choropleth(
+            df_all,
+            geojson=geojson_data,
+            featureidkey='properties.ST_NM',
+            locations='State',
+            color='transaction_count',
+            color_continuous_scale='Reds'
+             )
+
+            fig.update_geos(fitbounds="locations", visible=False, scope="asia")
+
+            st.plotly_chart(fig, use_container_width=True)
 
         if on_7:
             fig1 = px.bar(df_tp1 , x = 'state', y ='transaction_count', color ='transaction_count', 
@@ -426,11 +503,37 @@ with tab4:
 
             on_12 = st.toggle("Show plot",key='on_12')
 
+            
+
         if on_12:
             fig4 = px.bar(df_tp4 , x = 'state', y ='registeredcount', color ='appopens', 
                 color_continuous_scale = 'thermal', title = 'Least 10 states based on Registered Users', 
                 height = 600,)
             st.plotly_chart(fig4)
+
+            query_all=f"""SELECT "State" AS State, 
+                    SUM("RegisteredCount") AS RegisteredCount, SUM("AppOpens") as AppOpens
+                FROM public."aggMapUsers" WHERE "Year"='{us_yr}' AND "Quarter" = '{us_qtr}' GROUP BY "State"
+				ORDER BY RegisteredCount,AppOpens ;
+                        """
+            df_all=pd.read_sql(query_all,engine)
+            geojson_url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+            geojson_data = requests.get(geojson_url).json()
+
+            df_all['State'] = df_all['state'].str.strip().str.title()
+
+            fig = px.choropleth(
+            df_all,
+            geojson=geojson_data,
+            featureidkey='properties.ST_NM',
+            locations='State',
+            color='registeredcount',
+            color_continuous_scale='Reds'
+             )
+
+            fig.update_geos(fitbounds="locations", visible=False, scope="asia")
+
+            st.plotly_chart(fig, use_container_width=True)
 
         with col4:
             st.markdown(":violet[**Least 10 Districts**]")
@@ -538,6 +641,33 @@ with tab5:
                 height = 600)
             st.plotly_chart(fig1)
 
+            query_all=f"""SELECT "state"  as State, 
+                            SUM("insurance_count") AS Insurance_count,
+							SUM("insurance_amount") AS Insurance_Amount
+                        FROM public.agginsurance 
+                        WHERE "year" = '{Ip_yr}' 
+                        AND "quarter" = '{Ip_qtr}' 
+                        GROUP BY "state" 
+                        ORDER BY Insurance_count   ;
+                        """
+            df_all=pd.read_sql(query_all,engine)
+            geojson_url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+            geojson_data = requests.get(geojson_url).json()
+
+            df_all['State'] = df_all['state'].str.strip().str.title()
+
+            fig = px.choropleth(
+            df_all,
+            geojson=geojson_data,
+            featureidkey='properties.ST_NM',
+            locations='State',
+            color='insurance_count',
+            color_continuous_scale='Reds'
+             )
+
+            fig.update_geos(fitbounds="locations", visible=False, scope="asia")
+
+            st.plotly_chart(fig, use_container_width=True)
         with col4:
             st.markdown(":violet[**Least 10 Districts**]")
             query_tp2=f"""SELECT "District" AS District, 
