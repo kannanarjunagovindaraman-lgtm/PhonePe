@@ -516,15 +516,16 @@ with tab5:
         with col3:
 
         #Tables and toggle switches with bar plots
-            st.markdown(":violet[**Top 10 States**]")
-            query_tp1=f"""SELECT "State"  as State, 
-                            SUM("Transacion_count") AS Transaction_count
-                        FROM public.aggtransaction 
-                        WHERE "Year" = '{Ip_yr}' 
-                        AND "Quarter" = '{Ip_qtr}' 
-                        GROUP BY "State" 
-                        ORDER BY Transaction_count DESC 
-                        LIMIT 10; """
+            st.markdown(":violet[**Least 10 States**]")
+            query_tp1=f"""SELECT "state"  as State, 
+                            SUM("insurance_count") AS Insurance_count,
+							SUM("insurance_amount") AS Insurance_Amount
+                        FROM public.agginsurance 
+                        WHERE "year" = '{Ip_yr}' 
+                        AND "quarter" = '{Ip_qtr}' 
+                        GROUP BY "state" 
+                        ORDER BY Insurance_count  
+                        LIMIT 10;"""
             df_tp1=pd.read_sql(query_tp1,engine)
             df_tp1.index += 1
             st.dataframe(df_tp1)
@@ -532,15 +533,17 @@ with tab5:
             on_15 = st.toggle("Show plot",key='on_15')
 
         if on_15:
-            fig1 = px.bar(df_tp1 , x = 'state', y ='transaction_count', color ='transaction_count', 
-                color_continuous_scale = 'thermal', title = 'Top 10 states based on Transaction Count', 
+            fig1 = px.bar(df_tp1 , x = 'state', y ='insurance_count', color ='insurance_amount', 
+                color_continuous_scale = 'thermal', title = 'Least 10 states based on Insurance Count - Action required to improve Insurance numbers', 
                 height = 600)
             st.plotly_chart(fig1)
 
         with col4:
-            st.markdown(":violet[**Top 10 Districts**]")
-            query_tp2=f"""SELECT "District", "Count" FROM public."aggTopTransaction"
-            WHERE "Year"='{Ip_yr}' AND "Quarter" = '{Ip_qtr}' ORDER BY "Count" DESC LIMIT 10;
+            st.markdown(":violet[**Least 10 Districts**]")
+            query_tp2=f"""SELECT "District" AS District, 
+                    SUM("Count") AS Insurance_count, SUM("Amount") as Insurance_Amount
+                FROM public."aggMapInsurance"
+                WHERE "Year"='{Ip_yr}' AND "Quarter" = '{Ip_qtr}' GROUP BY District ORDER BY Insurance_count LIMIT 10;
 """
             df_tp2=pd.read_sql(query_tp2,engine)
             df_tp2.index += 1
@@ -549,30 +552,30 @@ with tab5:
             on_16 = st.toggle("Show plot",key='on_16')
 
         if on_16:
-            fig2 = px.bar(df_tp2 , x = 'District', y ='Count', color ='Count', 
+            fig2 = px.bar(df_tp2 , x = 'district', y ='insurance_count', color ='insurance_amount', 
                 color_continuous_scale = 'thermal', title = 'Top 10 districts based on Transaction Count', 
                 height = 600,)
             st.plotly_chart(fig2)
 
         with col5:
-            st.markdown(":violet[**Top 5 state performed well based on Quater of the year**]")
-            query_tp3=f"""SELECT "State"  as state,"Quarter", 
-                    SUM("Transacion_count") AS Transaction_count
-                FROM public.aggtransaction 
-                WHERE "Year" = '{Ip_yr}' 
-                GROUP BY "State","Quarter"
-                ORDER BY Transaction_count DESC 
-                LIMIT 5; 
+            st.markdown(":violet[**Least 5 state performed very low Insurance amount based on Quater of the year**]")
+            query_tp3=f"""SELECT "state"  as state,"quarter", 
+                    SUM("insurance_amount") AS Insurance_Amount
+                FROM public.agginsurance 
+                WHERE "year" = '{Ip_yr}' 
+                GROUP BY "state","quarter"
+                ORDER BY Insurance_Amount 
+                LIMIT 5		 
 """
-            df_tp3=pd.read_sql(query_tp3,engine)
-            df_tp3.index += 1
-            st.dataframe(df_tp3)
+            df_tp2=pd.read_sql(query_tp2,engine)
+            df_tp2.index += 1
+            st.dataframe(df_tp2)
 
             on_17 = st.toggle("Show plot",key='on_17')
 
         if on_17:
-            fig3 = px.bar(df_tp3 , x = 'state', y ='transaction_count', color ='Quarter', 
-                color_continuous_scale = 'thermal', title = 'Top 5 state performed well based on Quater of the year', 
+            fig3 = px.bar(df_tp3 , x = 'state', y ='insurance_amount', color ='quarter', 
+                color_continuous_scale = 'thermal', title = 'Least 5 state performed very low Insurance amount based on Quater of the year', 
                 height = 600,)
             fig3.update_layout(xaxis_type='category')
             st.plotly_chart(fig3)
@@ -584,28 +587,29 @@ with tab5:
         with col3:
 
             #Tables and toggle switches with bar plots
-            st.markdown(":violet[**Top 10 Districts**]")
-            query_tp2=f"""SELECT "District", "Count" FROM  public."aggTopTransaction"
-            WHERE "Year"='{Ip_yr}' AND "Quarter" = '{Ip_qtr}' AND "State" = '{Ip_state}' 
-            ORDER BY "Count" DESC LIMIT 10;"""
-            df_tp2=pd.read_sql(query_tp2,engine)
-            df_tp2.index += 1
-            st.dataframe(df_tp2)
-
+            st.markdown(":violet[**Least 10 Districts**]")
+            query_tp3=f"""SELECT "District" AS District, 
+                    SUM("Count") AS Insurance_count, SUM("Amount") as Insurance_Amount
+                FROM public."aggMapInsurance"
+                WHERE "Year"='{Ip_yr}' AND "Quarter" = '{Ip_qtr}' AND "State" = '{Ip_state}' GROUP BY District ORDER BY Insurance_count LIMIT 10;
+"""
+            df_tp3=pd.read_sql(query_tp3,engine)
+            df_tp3.index += 1
+            st.dataframe(df_tp3)
             on_18 = st.toggle("Show plot",key='on_18')
 
         if on_18:
             fig2 = px.bar(df_tp2 , x = 'District', y ='Count', color ='Count', 
-                color_continuous_scale = 'thermal', title = 'Top 10 districts based on Transaction Count', 
+                color_continuous_scale = 'thermal', title = 'Least 10 districts based on Transaction Count', 
                 height = 600,)
             st.plotly_chart(fig2)
 
         with col4:
-            st.markdown(":violet[**Top 5 District performed well for the selected year and State**]")
-            query_tp3=f"""SELECT "District", "Quarter", SUM("Count") as Count FROM  public."aggTopTransaction"
+            st.markdown(":violet[**Least 5 District performed very low Insured amount for the selected year and State**]")
+            query_tp3=f"""SELECT "District", "Quarter", SUM("Amount") as Amount FROM  public."aggMapInsurance"
             WHERE "Year"='{Ip_yr}' AND "State" = '{Ip_state}'
 			group by "District", "Quarter"
-            ORDER BY Count DESC LIMIT 5;"""
+            ORDER BY Amount LIMIT 5;"""
             df_tp3=pd.read_sql(query_tp3,engine)
             df_tp3.index += 1
             st.dataframe(df_tp3)
@@ -613,8 +617,8 @@ with tab5:
             on_19 = st.toggle("Show plot",key='on_19')
 
         if on_19:
-            fig3 = px.bar(df_tp3 , x = 'District', y ='count', color ='Quarter', 
-                color_continuous_scale = 'thermal', title = 'Top 5 District performed well for the selected year and State', 
+            fig3 = px.bar(df_tp3 , x = 'District', y ='amount', color ='Quarter', 
+                color_continuous_scale = 'thermal', title = 'Least 5 District performed very low Insured amount for the selected year and State', 
                 height = 600,)
             fig3.update_layout(xaxis_type='category')
             st.plotly_chart(fig3)
